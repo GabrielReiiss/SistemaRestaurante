@@ -21,6 +21,33 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.sistemarestaurante.todosimple.models.Despesa;
 import com.sistemarestaurante.todosimple.services.DespesaService;
 
+
+/* findById: retornar 404 quando não encontrado
+Problema: se despesaService.findById(id) lançar exceção não mapeada, vira 500.
+Sugestões:
+findOptionalById(id) e mapear para 404, ou
+manter exceção de domínio e tratá-la via @ControllerAdvice. */
+
+
+/* Validação forte e tipos para valores monetários
+Sugestões:
+Em valores de dinheiro, prefira BigDecimal em vez de Double (evita erro de ponto flutuante).
+Anotar campos no DTO: @PositiveOrZero, @Digits(integer=12, fraction=2), @NotBlank para descrição/categoria. */
+
+
+/* Observabilidade
+Sugestão: adicionar logs estruturados (nível, requestId, despesaId) nos pontos de criação/atualização/remoção; ajuda no suporte e auditoria. */
+
+
+/* Limpeza de comentários e imports
+Smell: comentário “Retorne a comanda criada…” é copy-paste. Ajustar para despesa.
+Sugestão: revisar imports não usados ao final para evitar warnings. */
+
+
+/* Segurança e CORS (se houver front separado)
+Smell: comentário “Retorne a comanda criada…” é copy-paste. Ajustar para despesa.
+Sugestão: revisar imports não usados ao final para evitar warnings. */
+
 @RestController
 @RequestMapping("/despesa")
 public class DespesaController {

@@ -17,6 +17,36 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+
+/* create: tipo de retorno e body
+Smell: método declara ResponseEntity<Desperdicio> mas retorna created(...).build() (sem body) → mismatch.
+Sugestão: retornar o recurso criado no body ou alterar a assinatura para ResponseEntity<Void>. */
+
+
+/* delete: ok, mas valide ID e retorne 204
+Melhoria: adicionar validação básica no path param. */
+
+
+/* createMultiple: transação, status e payload de erro 
+Pontos a ajustar:
+
+Transação: hoje pode criar parcial; defina política: tudo-ou-nada (rollback) ou parcial com relatório.
+
+Status: created(uris.get(0)) é estranho em bulk; prefira 200 OK ou 201 Created sem Location, com a lista no body.
+
+Erros: não exponha e.getMessage() diretamente (vaza detalhes internos).
+
+Validação: valide item a item List<@Valid ...>. */
+
+
+/* Validação e tipos numéricos
+Sugestão: anotar quantidade com @DecimalMin("0.0") (ou @PositiveOrZero) e considerar BigDecimal se essa quantidade envolver medidas/custos com precisão.*/
+
+
+/* Tratamento de erros padronizado (ProblemDetail) 
+Sugestão: adicionar @RestControllerAdvice e retornar ProblemDetail (Spring 6) com type, title, status, detail, instance.
+Benefícios: respostas homogêneas (404, 400, 409), sem vazar stacktrace/mensagens internas. */
+
 @RestController
 @RequestMapping("/desperdicio")
 public class DesperdicioController {
