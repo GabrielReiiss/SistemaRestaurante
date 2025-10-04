@@ -20,6 +20,31 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.sistemarestaurante.todosimple.models.Comanda;
 import com.sistemarestaurante.todosimple.services.ComandaService;
 
+
+/* createComanda: OK com 201 Created, mas padronizar DTOs
+Melhoria: evitar expor a entidade diretamente. Use ComandaRequest/ComandaResponse (DTOs) e mapeie no service.
+Benefícios: contrato estável, controle de campos, segurança. */
+
+
+/* getAll: paginação e filtros (escala e performance)
+Smell: GET /todos sem paginação pode retornar listas grandes.
+Sugestão: adotar Pageable e filtros via query string. */
+
+
+/* PUT /{id}: status de retorno e semântica
+Problema: PUT retornando 201 Created com Location geralmente não é esperado; PUT deve ser idempotente e retornar 204 No Content ou 200 OK com o recurso atualizado.
+Sugestão: retornar 204 (ou 200 com body) e não recriar URI. */
+
+
+/* Convenções de nomes (Java)
+Observação: getId_comanda() foge ao padrão Java Beans.
+Sugestão: renomear para getIdComanda()/setIdComanda() (e idComanda no campo). */
+
+
+/* @Validated por grupos na entidade (acoplamento de camadas)
+Smell: grupos de validação (CreateComanda, UpdateComanda) declarados na entidade acoplam domínio à camada web.
+Sugestão: mover validações para DTOs (request), deixando a entidade mais limpa. */
+
 @RestController
 @RequestMapping("/comanda")
 public class ComandaController {

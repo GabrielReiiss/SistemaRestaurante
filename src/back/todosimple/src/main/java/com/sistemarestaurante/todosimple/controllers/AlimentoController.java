@@ -25,12 +25,45 @@ import java.util.Optional;
 @RequestMapping("/alimento")
 @Validated
 
-public class AlimentoController {
+
+/* Injeção de dependência (boas práticas/testabilidade)
+ Sugestão: trocar field injection (@Autowired no atributo) por constructor injection.
+Benefícios: imutabilidade, melhor suporte a testes, evita null em cenários de proxy, favorece DI explícita. */
+
+
+/* RESTfulness e consistência de rotas
+Observação: a base path está singular (/alimento). Em APIs REST, convenciona-se pluralizar recursos.
+Sugestão: alterar para /alimentos e padronizar os verbos/URLs:
+
+GET /alimentos/{id} (por id)
+GET /alimentos?nome=... (busca por nome via @RequestParam)
+POST /alimentos (criar)
+PUT /alimentos/{id} (atualizar recurso completo)
+PATCH /alimentos/{id}/quantidade (parcial/específico)
+DELETE /alimentos/{id} (remover)
+GET /alimentos (listar todos) */
+
+/* Tratamento de Optional (evitar NoSuchElementException)
+Problema: alimentoService.findByNome(nome) usa alimento.get() sem verificar presença → pode lançar exceção 500.
+Sugestão: retornar 404 quando não encontrado. */
+
+
+/* Semântica de PUT por nome (code smell: identificação frágil)
+Smell: usar nome como identificador em PUT/DELETE torna a API frágil (nomes não são estáveis/únicos).
+Sugestão: usar ID no path e validar unicidade do nome na camada de regra. Se mantiver por nome, documentar que é único/imutável. */
+
+
+/* Endpoint de atualização de quantidade (usar PATCH e DTO)
+Melhoria: para atualização parcial de um campo, prefira PATCH e um DTO explícito em vez de Map.
+Benefícios: validação forte, schema claro, menos erros de chave ausente. */
+
+
+public class AlimentoController {  
     @Autowired
     private AlimentoService alimentoService;
 
     @GetMapping("/id/{id_ingrediente}")
-    public ResponseEntity<Alimento> findById(@PathVariable Integer id_ingrediente) {
+    public ResponseEntity<Alimento> findById(@PathVariable Integer id_ingrediente) { 
         Alimento alimento = this.alimentoService.findById(id_ingrediente);
         return ResponseEntity.ok().body(alimento);
     }
